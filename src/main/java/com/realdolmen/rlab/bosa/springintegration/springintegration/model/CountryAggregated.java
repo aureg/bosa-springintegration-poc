@@ -7,4 +7,5 @@ import lombok.Data;
 public class CountryAggregated {
     private Country country;
     private String extraString;
+    private String catFactAsString;
 }

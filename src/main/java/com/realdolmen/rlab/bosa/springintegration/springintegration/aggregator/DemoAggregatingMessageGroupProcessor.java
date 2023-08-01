@@ -1,5 +1,6 @@
 package com.realdolmen.rlab.bosa.springintegration.springintegration.aggregator;
 
+import com.realdolmen.rlab.bosa.springintegration.springintegration.model.CatFact;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.model.CountryAggregated;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.Country;
 import org.springframework.integration.aggregator.AbstractAggregatingMessageGroupProcessor;
@@ -20,6 +21,9 @@ public class DemoAggregatingMessageGroupProcessor extends AbstractAggregatingMes
             }
             else if (message.getPayload() instanceof Country){
                 countryAggregated.setCountry((Country) message.getPayload());
+            }
+            else if (message.getPayload() instanceof CatFact){
+                countryAggregated.setCatFactAsString(((CatFact) message.getPayload()).getFact());
             }
         }
 

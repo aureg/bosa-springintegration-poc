@@ -1,16 +1,15 @@
 package com.realdolmen.rlab.bosa.springintegration.springintegration.flow;
 
 import com.realdolmen.rlab.bosa.springintegration.springintegration.aggregator.DemoAggregatingMessageGroupProcessor;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.model.CatFact;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.model.Test;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.transformer.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpMethod;
 import org.springframework.integration.IntegrationMessageHeaderAccessor;
 import org.springframework.integration.aggregator.AggregatingMessageHandler;
-import org.springframework.integration.aggregator.ExpressionEvaluatingMessageGroupProcessor;
 import org.springframework.integration.aggregator.ExpressionEvaluatingReleaseStrategy;
 import org.springframework.integration.aggregator.HeaderAttributeCorrelationStrategy;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -49,9 +48,11 @@ public class CatFactRestAPIFlow {
     @Autowired
     CountryToStringTransformer countryToStringTransformer;
     @Autowired
-    public MessageChannel subChannel1;
+    public MessageChannel getCountryAsStringChannel;
     @Autowired
-    public MessageChannel subChannel2;
+    public MessageChannel getCountryUpperCaseChannel;
+    @Autowired
+    public MessageChannel getCatFactChannel;
     @Autowired
     public MessageChannel outputChannelAggregator;
 
@@ -98,7 +99,7 @@ public class CatFactRestAPIFlow {
     private MessageHandler distributor() {
         RecipientListRouter router = new RecipientListRouter();
         router.setApplySequence(true);
-        router.setChannels(Arrays.asList(subChannel1, subChannel2));
+        router.setChannels(Arrays.asList(getCountryAsStringChannel, getCountryUpperCaseChannel, getCatFactChannel));
         return router;
     }
     public MessageHandler gatherer() {
@@ -107,7 +108,7 @@ public class CatFactRestAPIFlow {
                 new SimpleMessageStore(),
                 new HeaderAttributeCorrelationStrategy(
                         IntegrationMessageHeaderAccessor.CORRELATION_ID),
-                new ExpressionEvaluatingReleaseStrategy("size() == 2"));
+                new ExpressionEvaluatingReleaseStrategy("size() == 3"));
     }
     private MessageHandler scatterGatherDistribution() {
         ScatterGatherHandler handler = new ScatterGatherHandler(distributor(), gatherer());
@@ -126,16 +127,33 @@ public class CatFactRestAPIFlow {
 
     @Bean
     public IntegrationFlow outSubChannel1() {
-        return IntegrationFlow.from("subChannel1")
-                .log(message -> "start subChannel1")
+        return IntegrationFlow.from("getCountryAsStringChannel")
+                .log(message -> "start getCountryAsStringChannel")
                 .transform(countryToStringTransformer)
                 .get();
     }
     @Bean
     public IntegrationFlow outSubChannel2() {
-        return IntegrationFlow.from("subChannel2")
-                .log(message -> "start subChannel2")
+        return IntegrationFlow.from("getCountryUpperCaseChannel")
+                .log(message -> "start getCountryUpperCaseChannel")
                 .transform(upperCaseCountryTransformer)
+                .get();
+    }
+    @Bean
+    public IntegrationFlow outGetCatFactChannel()
+    {
+        return IntegrationFlow.from("getCatFactChannel")
+                .log(message -> "start outGetCatFactChannel")
+                .handle(
+                        Http.outboundGateway("https://catfact.ninja/fact") // {pathParam} appended would consider value from next step
+                                //.uriVariable("pathParam", "header[customHeader]") // Fetch header value from incoming request and store in pathParam
+                                .httpMethod(HttpMethod.GET)
+                                .expectedResponseType(CatFact.class)
+                )
+                .enrichHeaders(h -> h.header("Content-type", "application/xml"))
+                .transform(upperCaseCatTransformer)
+                .transform(dashDashCaseCatTransformer)
+                .log(message -> "before outGate ")
                 .get();
     }
     @Bean

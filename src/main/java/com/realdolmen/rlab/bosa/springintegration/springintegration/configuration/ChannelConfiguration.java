@@ -35,11 +35,16 @@ public class ChannelConfiguration {
     }
 
     @Bean
-    public MessageChannel subChannel1() {
+    public MessageChannel getCountryAsStringChannel() {
         return new DirectChannel();
     }
     @Bean
-    public MessageChannel subChannel2() {
+    public MessageChannel getCountryUpperCaseChannel() {
+        return new DirectChannel();
+
+    }
+    @Bean
+    public MessageChannel getCatFactChannel() {
         return new DirectChannel();
 
     }
