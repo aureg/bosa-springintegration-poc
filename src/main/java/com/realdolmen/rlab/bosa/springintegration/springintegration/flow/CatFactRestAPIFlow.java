@@ -34,6 +34,14 @@ import java.util.Arrays;
 public class CatFactRestAPIFlow {
 
     @Autowired
+    public MessageChannel getCountryAsStringChannel;
+    @Autowired
+    public MessageChannel getCountryUpperCaseChannel;
+    @Autowired
+    public MessageChannel getCatFactChannel;
+    @Autowired
+    public MessageChannel outputChannelAggregator;
+    @Autowired
     UpperCaseCatTransformer upperCaseCatTransformer;
     @Autowired
     DashDashCaseCatTransformer dashDashCaseCatTransformer;
@@ -47,15 +55,6 @@ public class CatFactRestAPIFlow {
     LowerCaseCountryTransformer lowerCaseCountryTransformer;
     @Autowired
     CountryToStringTransformer countryToStringTransformer;
-    @Autowired
-    public MessageChannel getCountryAsStringChannel;
-    @Autowired
-    public MessageChannel getCountryUpperCaseChannel;
-    @Autowired
-    public MessageChannel getCatFactChannel;
-    @Autowired
-    public MessageChannel outputChannelAggregator;
-
 
     @Bean
     public IntegrationFlow inCatFact() {
@@ -102,6 +101,7 @@ public class CatFactRestAPIFlow {
         router.setChannels(Arrays.asList(getCountryAsStringChannel, getCountryUpperCaseChannel, getCatFactChannel));
         return router;
     }
+
     public MessageHandler gatherer() {
         return new AggregatingMessageHandler(
                 new DemoAggregatingMessageGroupProcessor(),
@@ -110,6 +110,7 @@ public class CatFactRestAPIFlow {
                         IntegrationMessageHeaderAccessor.CORRELATION_ID),
                 new ExpressionEvaluatingReleaseStrategy("size() == 3"));
     }
+
     private MessageHandler scatterGatherDistribution() {
         ScatterGatherHandler handler = new ScatterGatherHandler(distributor(), gatherer());
         handler.setOutputChannel(outputChannelAggregator);
@@ -132,6 +133,7 @@ public class CatFactRestAPIFlow {
                 .transform(countryToStringTransformer)
                 .get();
     }
+
     @Bean
     public IntegrationFlow outSubChannel2() {
         return IntegrationFlow.from("getCountryUpperCaseChannel")
@@ -139,9 +141,9 @@ public class CatFactRestAPIFlow {
                 .transform(upperCaseCountryTransformer)
                 .get();
     }
+
     @Bean
-    public IntegrationFlow outGetCatFactChannel()
-    {
+    public IntegrationFlow outGetCatFactChannel() {
         return IntegrationFlow.from("getCatFactChannel")
                 .log(message -> "start outGetCatFactChannel")
                 .handle(
@@ -156,6 +158,7 @@ public class CatFactRestAPIFlow {
                 .log(message -> "before outGate ")
                 .get();
     }
+
     @Bean
     public IntegrationFlow outputFinal() {
         return IntegrationFlow.from("outputChannelAggregator")

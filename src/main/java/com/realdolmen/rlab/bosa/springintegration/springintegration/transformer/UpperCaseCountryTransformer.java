@@ -1,6 +1,5 @@
 package com.realdolmen.rlab.bosa.springintegration.springintegration.transformer;
 
-import com.realdolmen.rlab.bosa.springintegration.springintegration.model.CatFact;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.Country;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.GetCountryResponse;
 import lombok.extern.slf4j.Slf4j;

@@ -15,14 +15,12 @@ public class DemoAggregatingMessageGroupProcessor extends AbstractAggregatingMes
 
         CountryAggregated countryAggregated = new CountryAggregated();
 
-        for(Message message : group.getMessages() ){
-            if(message.getPayload() instanceof String){
-                countryAggregated.setExtraString((String)message.getPayload());
-            }
-            else if (message.getPayload() instanceof Country){
+        for (Message message : group.getMessages()) {
+            if (message.getPayload() instanceof String) {
+                countryAggregated.setExtraString((String) message.getPayload());
+            } else if (message.getPayload() instanceof Country) {
                 countryAggregated.setCountry((Country) message.getPayload());
-            }
-            else if (message.getPayload() instanceof CatFact){
+            } else if (message.getPayload() instanceof CatFact) {
                 countryAggregated.setCatFactAsString(((CatFact) message.getPayload()).getFact());
             }
         }
