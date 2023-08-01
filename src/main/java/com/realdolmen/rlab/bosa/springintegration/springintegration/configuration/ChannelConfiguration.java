@@ -16,4 +16,20 @@ public class ChannelConfiguration {
     public DirectChannel nextServiceChannel() {
         return new DirectChannel();
     }
+
+
+    @Bean
+    public DirectChannel inCatFactChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public DirectChannel outCatFactChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public DirectChannel outChannel() {
+        return new DirectChannel();
+    }
 }

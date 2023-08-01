@@ -98,7 +98,8 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.14.0</version><executions>
+                <version>0.14.0</version>
+                <executions>
                     <execution>
                         <goals>
                             <goal>generate</goal>
@@ -107,7 +108,7 @@
                 </executions>
                 <configuration>
                     <schemaLanguage>WSDL</schemaLanguage>
-                    <generatePackage>com.example.consumingwebservice.wsdl</generatePackage>
+                    <generatePackage>com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl</generatePackage>
                     <schemas>
                         <schema>
                             <url>http://localhost:8080/ws/countries.wsdl</url>
@@ -123,7 +124,9 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <target>
-                                <replace dir="target/generated-sources/xjc/com/example/consumingwebservice/wsdl" token="javax.xml.bind" value="jakarta.xml.bind">
+                                <replace
+                                        dir="target/generated-sources/xjc/com/realdolmen/rlab/bosa/springintegration/springintegration"
+                                        token="javax.xml.bind" value="jakarta.xml.bind">
                                     <include name="**/*.java"/>
                                 </replace>
                             </target>
