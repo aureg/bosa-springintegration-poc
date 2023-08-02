@@ -1,9 +1,9 @@
-package com.realdolmen.rlab.bosa.springintegration.springintegration.endpoints;
+package com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.endpoints;
 
 
-import com.realdolmen.rlab.bosa.springintegration.springintegration.model.CatFact;
-import com.realdolmen.rlab.bosa.springintegration.springintegration.transformer.DashDashCaseCatTransformer;
-import com.realdolmen.rlab.bosa.springintegration.springintegration.transformer.UpperCaseCatTransformer;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.model.CatFact;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.transformer.DashDashCaseCatTransformer;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.transformer.UpperCaseCatTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;

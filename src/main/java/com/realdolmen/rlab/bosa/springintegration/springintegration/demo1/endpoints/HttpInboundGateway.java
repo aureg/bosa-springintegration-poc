@@ -1,4 +1,4 @@
-package com.realdolmen.rlab.bosa.springintegration.springintegration.endpoints;
+package com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.endpoints;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

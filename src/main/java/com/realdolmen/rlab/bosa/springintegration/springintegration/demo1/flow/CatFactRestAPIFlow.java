@@ -1,11 +1,12 @@
-package com.realdolmen.rlab.bosa.springintegration.springintegration.flow;
+package com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.flow;
 
-import com.realdolmen.rlab.bosa.springintegration.springintegration.aggregator.DemoAggregatingMessageGroupProcessor;
-import com.realdolmen.rlab.bosa.springintegration.springintegration.model.CatFact;
-import com.realdolmen.rlab.bosa.springintegration.springintegration.model.Test;
-import com.realdolmen.rlab.bosa.springintegration.springintegration.transformer.*;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.aggregator.DemoAggregatingMessageGroupProcessor;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.model.CatFact;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.model.Test;
+import com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.transformer.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.integration.IntegrationMessageHeaderAccessor;
@@ -58,7 +59,7 @@ public class CatFactRestAPIFlow {
 
     @Bean
     public IntegrationFlow inCatFact() {
-        log.info("Initializing inbound gateway...");
+        log.info("GATEWAY-INBOUND__________________________________ Initializing");
         return IntegrationFlow.from(
                         Http.inboundGateway("/catfact")
                                 .requestMapping(m -> m.methods(HttpMethod.POST))
@@ -82,7 +83,7 @@ public class CatFactRestAPIFlow {
     @Bean
     IntegrationFlow outboundCountry(Jaxb2Marshaller marshaller) {
         return IntegrationFlow.from("inCatFactChannel")
-                .log(message -> "before calling ws country")
+                .log(message -> "CHANNEL  __________________________________ inCatFactChannel")
                 .handle(
                         Ws.marshallingOutboundGateway()
 
@@ -90,19 +91,20 @@ public class CatFactRestAPIFlow {
                                 .marshaller(marshaller)
                                 .unmarshaller(marshaller)
                 )
-                .log(message -> "after calling ws country")
                 .channel("outChannel")
                 .get();
     }
 
-    private MessageHandler distributor() {
+    @Bean("scatterGatherDistributor")
+    protected MessageHandler scatterGatherDistributor() {
         RecipientListRouter router = new RecipientListRouter();
         router.setApplySequence(true);
         router.setChannels(Arrays.asList(getCountryAsStringChannel, getCountryUpperCaseChannel, getCatFactChannel));
         return router;
     }
 
-    public MessageHandler gatherer() {
+    @Bean("scatterGatherGatherer")
+    public MessageHandler scatterGatherGatherer() {
         return new AggregatingMessageHandler(
                 new DemoAggregatingMessageGroupProcessor(),
                 new SimpleMessageStore(),
@@ -111,25 +113,25 @@ public class CatFactRestAPIFlow {
                 new ExpressionEvaluatingReleaseStrategy("size() == 3"));
     }
 
-    private MessageHandler scatterGatherDistribution() {
-        ScatterGatherHandler handler = new ScatterGatherHandler(distributor(), gatherer());
+    @Bean("scatterGatherDistribution")
+    protected MessageHandler scatterGatherDistribution(@Qualifier("scatterGatherDistributor") MessageHandler distributor, @Qualifier("scatterGatherGatherer") MessageHandler gatherer) {
+        ScatterGatherHandler handler = new ScatterGatherHandler(distributor, gatherer);
         handler.setOutputChannel(outputChannelAggregator);
         return handler;
     }
 
-
     @Bean
-    public IntegrationFlow orders() {
+    public IntegrationFlow orders(@Qualifier("scatterGatherDistribution") MessageHandler scatterGatherDistribution) {
         return IntegrationFlow
                 .from("outChannel")
-                .handle(scatterGatherDistribution())
+                .handle(scatterGatherDistribution)
                 .get();
     }
 
     @Bean
     public IntegrationFlow outSubChannel1() {
         return IntegrationFlow.from("getCountryAsStringChannel")
-                .log(message -> "start getCountryAsStringChannel")
+                .log(message -> "CHANNEL  __________________________________ getCountryAsStringChannel")
                 .transform(countryToStringTransformer)
                 .get();
     }
@@ -137,7 +139,7 @@ public class CatFactRestAPIFlow {
     @Bean
     public IntegrationFlow outSubChannel2() {
         return IntegrationFlow.from("getCountryUpperCaseChannel")
-                .log(message -> "start getCountryUpperCaseChannel")
+                .log(message -> "CHANNEL  __________________________________ getCountryUpperCaseChannel")
                 .transform(upperCaseCountryTransformer)
                 .get();
     }
@@ -145,7 +147,7 @@ public class CatFactRestAPIFlow {
     @Bean
     public IntegrationFlow outGetCatFactChannel() {
         return IntegrationFlow.from("getCatFactChannel")
-                .log(message -> "start outGetCatFactChannel")
+                .log(message -> "CHANNEL  __________________________________ getCatFactChannel")
                 .handle(
                         Http.outboundGateway("https://catfact.ninja/fact") // {pathParam} appended would consider value from next step
                                 //.uriVariable("pathParam", "header[customHeader]") // Fetch header value from incoming request and store in pathParam
@@ -155,14 +157,13 @@ public class CatFactRestAPIFlow {
                 .enrichHeaders(h -> h.header("Content-type", "application/xml"))
                 .transform(upperCaseCatTransformer)
                 .transform(dashDashCaseCatTransformer)
-                .log(message -> "before outGate ")
                 .get();
     }
 
     @Bean
     public IntegrationFlow outputFinal() {
         return IntegrationFlow.from("outputChannelAggregator")
-                .log(message -> "start outputChannelAggregator")
+                .log(message -> "CHANNEL  __________________________________ outputChannelAggregator")
                 .get();
     }
 

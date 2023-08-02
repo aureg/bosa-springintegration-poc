@@ -1,4 +1,4 @@
-package com.realdolmen.rlab.bosa.springintegration.springintegration.transformer;
+package com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.transformer;
 
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.GetCountryResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class CountryToStringTransformer {
     @Transformer
     public String toStringTransformer(GetCountryResponse payload) {
-        log.error("TRANSFORM__________________________________CountryToStringTransformer");
+        log.error("TRANSFORM__________________________________ CountryToStringTransformer");
 
         String country = "Country: "
                 + payload.getCountry().getName()

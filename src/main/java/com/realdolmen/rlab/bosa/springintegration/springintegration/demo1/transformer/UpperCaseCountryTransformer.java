@@ -1,4 +1,4 @@
-package com.realdolmen.rlab.bosa.springintegration.springintegration.transformer;
+package com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.transformer;
 
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.Country;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.GetCountryResponse;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class UpperCaseCountryTransformer {
     @Transformer
     public Country upperCaseTransformer(GetCountryResponse payload) {
-        log.error("TRANSFORM__________________________________UpperCaseCountryTransformer");
+        log.error("TRANSFORM__________________________________ UpperCaseCountryTransformer");
 
         Country country = new Country();
         country.setName(payload.getCountry().getName().toUpperCase());

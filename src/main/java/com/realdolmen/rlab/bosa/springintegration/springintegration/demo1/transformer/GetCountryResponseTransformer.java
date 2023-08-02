@@ -1,4 +1,4 @@
-package com.realdolmen.rlab.bosa.springintegration.springintegration.transformer;
+package com.realdolmen.rlab.bosa.springintegration.springintegration.demo1.transformer;
 
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.Country;
 import com.realdolmen.rlab.bosa.springintegration.springintegration.wsdl.GetCountryResponse;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class GetCountryResponseTransformer {
     @Transformer
     public Country transformGetCountry(Object payload) {
-        log.error("TRANSFORM__________________________________GetCountryResponseTransformer");
+        log.error("TRANSFORM__________________________________ GetCountryResponseTransformer");
         if (payload instanceof GetCountryResponse) {
             log.error("I'm a get country response");
             return ((GetCountryResponse) payload).getCountry();
