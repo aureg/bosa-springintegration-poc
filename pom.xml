@@ -113,6 +113,12 @@
                         <schema>
                             <url>http://localhost:8080/ws/countries.wsdl</url>
                         </schema>
+                        <schema>
+                            <url>http://localhost:8080/ws/nrpersonservice.wsdl</url>
+                        </schema>
+                        <schema>
+                            <url>http://localhost:8080/ws/ssrpersonservice.wsdl</url>
+                        </schema>
                     </schemas>
                 </configuration>
             </plugin>
@@ -125,7 +131,7 @@
                         <configuration>
                             <target>
                                 <replace
-                                        dir="target/generated-sources/xjc/com/realdolmen/rlab/bosa/springintegration/springintegration"
+                                        dir="target/generated-sources/xjc/com/realdolmen/rlab/bosa/springintegration/springintegration/wsdl"
                                         token="javax.xml.bind" value="jakarta.xml.bind">
                                     <include name="**/*.java"/>
                                 </replace>
